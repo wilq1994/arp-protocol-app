@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div class="list-computers">
-      <computer v-for="(computer, key) in computers" :key="key" :id="key" :value="computer.value"></computer>
+      <computer v-for="(computer, key) in computers" :key="key" :id="key" :value="computer.value" :classobject="computer.classObject"></computer>
     </div>
     <button v-on:click="runSearch(1, 'b')">Start</button>
   </div>
@@ -20,37 +20,86 @@
         computers: {
           1: {
             value: 'a',
-            neighbours: [2]
+            neighbours: [2],
+            classObject: {
+              red: false,
+              green: false
+            }
           },
           2: {
             value: 'b',
-            neighbours: [1, 3]
+            neighbours: [1, 3],
+            classObject: {
+              red: false,
+              green: false
+            }
           },
           3: {
             value: 'c',
-            neighbours: [2,4]
+            neighbours: [2,4,6],
+            classObject: {
+              red: false,
+              green: false
+            }
           },
           4: {
             value: 'd',
-            neighbours: [3]
+            neighbours: [3,5],
+            classObject: {
+              red: false,
+              green: false
+            }
+          },
+          5: {
+            value: 'd',
+            neighbours: [4],
+            classObject: {
+              red: false,
+              green: false
+            }
+          },
+          6: {
+            value: 'f',
+            neighbours: [3],
+            classObject: {
+              red: false,
+              green: false
+            }
           }
         }
       }
     },
     methods: {
       runSearch(target, value){
-        let _p = [1]
-        console.log(this.search('d', 2, _p, [1]))
+        const that = this;
+        let current = [1]
+        const result = this.search('f', 2, current, [1])
+                            .filter((item, i, array) => {
+                              return array.indexOf(item) === i
+                            })
+
+        console.log(result)
+
+        result.reverse().reduce((prev, next) => {
+          setTimeout(()=>{
+            that.computers[prev].classObject.red = false;
+            that.computers[prev].classObject.green = true;
+          }, 1000)
+          that.greenLine(prev, next)
+          return next
+        })
       },
-      search(value, id, path, visited = []){
+      search(value, id, previous, visited = []){
         if(visited.includes(id)) return false
 
         const that = this;
-        const _path = [id];
+        const current = [id];
         visited.push(id)
+        this.computers[id].classObject.red = true;
+        this.redline(previous[0], id)
 
         if(this.computers[id].value === value){
-          return true
+          return current
         }else{
           const sorted = this.computers[id]
                               .neighbours
@@ -60,15 +109,26 @@
                               })
 
           for(let key in sorted){
-            if(this.search(value, sorted[key], _path, visited)){
-              _path.push(sorted[key])
-              console.log(path.concat(_path));
-              return true
+            var next = this.search(value, sorted[key], current, visited);
+            if(next){
+              // console.log({
+              //   'id': id,
+              //   'previous': previous,
+              //   'current': current,
+              //   'next': next
+              // })
+              return previous.concat(current.concat(next))
             }
           }
         }
 
         return false
+      },
+      redline(a, b) {
+        console.log(`red ${a} ${b}`)
+      },
+      greenLine(a, b) {
+        console.log(`green ${a} ${b}`)
       }
     }
   }
