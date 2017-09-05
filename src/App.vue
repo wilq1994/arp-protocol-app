@@ -3,7 +3,7 @@
     <div class="list-computers">
       <computer v-for="(computer, key) in computers" :key="key" :id="key" :value="computer.value" :classobject="computer.classObject"></computer>
     </div>
-    <button v-on:click="runSearch(1, 'b')">Start</button>
+    <button v-on:click="runSearch(2, 'e')">Start</button>
   </div>
 </template>
 
@@ -51,7 +51,7 @@
             }
           },
           5: {
-            value: 'd',
+            value: 'e',
             neighbours: [4],
             classObject: {
               red: false,
@@ -70,30 +70,40 @@
       }
     },
     methods: {
-      runSearch(target, value){
-        const that = this;
-        let current = [1]
-        const result = this.search('f', 2, current, [1])
-                            .filter((item, i, array) => {
+      runSearch(start, value){
+        const that = this
+        const current = start
+        let path = [current]
+
+
+        this.computers[current].neighbours.forEach((neighbourId) => {
+          const result = this.search(value, neighbourId, path, [current])
+
+          if(result){
+            result.unshift(current)
+            const reversed = result.filter((item, i, array) => {
                               return array.indexOf(item) === i
                             })
+                            .reverse()
 
-        console.log(result)
+            reversed.reduce((prev, next) => {
+              setTimeout(()=>{
+                that.computers[prev].classObject.red = false;
+                that.computers[prev].classObject.green = true;
+              }, 1000)
+              that.greenLine(prev, next)
+              return next
+            })
+          }
 
-        result.reverse().reduce((prev, next) => {
-          setTimeout(()=>{
-            that.computers[prev].classObject.red = false;
-            that.computers[prev].classObject.green = true;
-          }, 1000)
-          that.greenLine(prev, next)
-          return next
         })
       },
       search(value, id, previous, visited = []){
         if(visited.includes(id)) return false
 
-        const that = this;
-        const current = [id];
+        const that = this
+        const current = [id]
+        let result = false
         visited.push(id)
         this.computers[id].classObject.red = true;
         this.redline(previous[0], id)
@@ -111,18 +121,12 @@
           for(let key in sorted){
             var next = this.search(value, sorted[key], current, visited);
             if(next){
-              // console.log({
-              //   'id': id,
-              //   'previous': previous,
-              //   'current': current,
-              //   'next': next
-              // })
-              return previous.concat(current.concat(next))
+              result = previous.concat(current.concat(next))
             }
           }
         }
 
-        return false
+        return result
       },
       redline(a, b) {
         console.log(`red ${a} ${b}`)
