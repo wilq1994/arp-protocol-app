@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <svg width="800" height="300">
-      <edge v-for="(edge, key) in edges" :x1="computers[edge.nodes[0]].x" :y1="computers[edge.nodes[0]].y" :x2="computers[edge.nodes[1]].x" :y2="computers[edge.nodes[1]].y" :classobject="edge.classObject"></edge>
+      <edge v-for="(edge, key) in edges" :key="key" :x1="computers[edge.nodes[0]].x" :y1="computers[edge.nodes[0]].y" :x2="computers[edge.nodes[1]].x" :y2="computers[edge.nodes[1]].y" :classobject="edge.classObject"></edge>
       <computer v-for="(computer, key) in computers" :key="key" :id="key" :value="computer.value" :class="{ selected: computer.selected }" :classobject="computer.classObject" :x="computer.x" :y="computer.y" :selectNode="selectNode"></computer>
     </svg>
     <button v-on:click="runSearch(2, 'a')">Start</button>
