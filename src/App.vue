@@ -5,18 +5,21 @@
       <computer v-for="(computer, key) in computers" :key="key" :id="key" :value="computer.value" :class="{ selected: computer.selected }" :classobject="computer.classObject" :x="computer.x" :y="computer.y" :selectNode="selectNode"></computer>
     </svg>
     <button v-on:click="runSearch(2, 'a')">Start</button>
+    <computer-table :table="(computers[selectedNode]) ? computers[selectedNode].table : null"></computer-table>
   </div>
 </template>
 
 <script>
   import Computer from './components/Computer'
   import Edge from './components/Edge'
+  import ComputerTable from './components/ComputerTable'
 
   export default {
     name: 'app',
     components: {
       Computer,
-      Edge
+      Edge,
+      ComputerTable
     },
     data: () => {
       return {
@@ -68,7 +71,8 @@
             },
             x: 0,
             y: 0,
-            tables: {},
+            table: {},
+            routes: {},
             selected: false
           },
           2: {
@@ -80,7 +84,8 @@
             },
             x: 100,
             y: 0,
-            tables: {},
+            table: {},
+            routes: {},
             selected: false
           },
           3: {
@@ -92,7 +97,8 @@
             },
             x: 200,
             y: 0,
-            tables: {},
+            table: {},
+            routes: {},
             selected: false
           },
           4: {
@@ -104,7 +110,8 @@
             },
             x: 300,
             y: 0,
-            tables: {},
+            table: {},
+            routes: {},
             selected: false
           },
           5: {
@@ -116,7 +123,8 @@
             },
             x: 400,
             y: 0,
-            tables: {},
+            table: {},
+            routes: {},
             selected: false
           },
           6: {
@@ -128,7 +136,8 @@
             },
             x: 200,
             y: 100,
-            tables: {},
+            table: {},
+            routes: {},
             selected: false
           }
         }
@@ -142,8 +151,10 @@
 
         this.clear()
 
-        if(this.computers[current].tables[value]){
-          this.computers[current].tables[value].reduce((prev, next) => {
+        if(!this.computers[current]) return
+
+        if(this.computers[current].routes[value]){
+          this.computers[current].routes[value].reduce((prev, next) => {
             setTimeout(()=>{
               that.computers[prev].classObject.red = false
               that.computers[prev].classObject.green = true
@@ -161,8 +172,8 @@
                 return array.indexOf(item) === i
               })
 
-
-              this.computers[current].tables[value] = unique
+              this.computers[current].routes[value] = unique
+              this.computers[current].table[unique[unique.length-1]] = { ip: value, mac: unique[unique.length-1] }
 
               unique.reverse().reduce((prev, next) => {
                 setTimeout(()=>{
