@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <svg width="800" height="600">
+    <svg width="800" height="300">
       <edge v-for="(edge, key) in edges" :x1="computers[edge.nodes[0]].x" :y1="computers[edge.nodes[0]].y" :x2="computers[edge.nodes[1]].x" :y2="computers[edge.nodes[1]].y" :classobject="edge.classObject"></edge>
       <computer v-for="(computer, key) in computers" :key="key" :id="key" :value="computer.value" :classobject="computer.classObject" :x="computer.x" :y="computer.y"></computer>
     </svg>
@@ -181,9 +181,16 @@
         return result
       },
       redline(a, b) {
+        const min = Math.min(a, b)
+        const max = Math.max(a, b)
+        this.edges[min+'-'+max].classObject.red = true
         console.log(`red ${a} ${b}`)
       },
       greenLine(a, b) {
+        const min = Math.min(a, b)
+        const max = Math.max(a, b)
+        this.edges[min+'-'+max].classObject.red = false
+        this.edges[min+'-'+max].classObject.green = true
         console.log(`green ${a} ${b}`)
       }
     }
