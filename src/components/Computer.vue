@@ -1,5 +1,10 @@
 <template>
-  <rect :x="x" :y="y" width="40" height="40" :class="classobject"/>
+  <g>
+    <text :x="x + 20" :y="y - 10" class="text">PC{{ id }}</text>
+    <rect :x="x" :y="y" width="40" height="40" :class="classobject"/>
+    <text :x="x + 20" :y="y + 60" class="text">192.168.0.1</text>
+    <text :x="x + 20" :y="y + 80" class="text">E4:CD:8A:83:1D:0B</text>
+  </g>
 </template>
 
 <script>
@@ -27,5 +32,11 @@
 
   .green {
     fill: #00ff00;
+  }
+
+  .text {
+    font-family: 'Arial';
+    font-size: 12px;
+    text-anchor: middle;
   }
 </style>
