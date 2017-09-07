@@ -4,7 +4,7 @@
       <edge v-for="(edge, key) in edges" :x1="computers[edge.nodes[0]].x" :y1="computers[edge.nodes[0]].y" :x2="computers[edge.nodes[1]].x" :y2="computers[edge.nodes[1]].y" :classobject="edge.classObject"></edge>
       <computer v-for="(computer, key) in computers" :key="key" :id="key" :value="computer.value" :classobject="computer.classObject" :x="computer.x" :y="computer.y"></computer>
     </svg>
-    <button v-on:click="runSearch(2, 'f')">Start</button>
+    <button v-on:click="runSearch(2, 'a')">Start</button>
   </div>
 </template>
 
@@ -66,7 +66,8 @@
               green: false
             },
             x: 0,
-            y: 0
+            y: 0,
+            tables: {}
           },
           2: {
             value: 'b',
@@ -76,7 +77,8 @@
               green: false
             },
             x: 100,
-            y: 0
+            y: 0,
+            tables: {}
           },
           3: {
             value: 'c',
@@ -86,7 +88,8 @@
               green: false
             },
             x: 200,
-            y: 0
+            y: 0,
+            tables: {}
           },
           4: {
             value: 'd',
@@ -96,7 +99,8 @@
               green: false
             },
             x: 300,
-            y: 0
+            y: 0,
+            tables: {}
           },
           5: {
             value: 'e',
@@ -106,7 +110,8 @@
               green: false
             },
             x: 400,
-            y: 0
+            y: 0,
+            tables: {}
           },
           6: {
             value: 'f',
@@ -116,7 +121,8 @@
               green: false
             },
             x: 200,
-            y: 100
+            y: 100,
+            tables: {}
           }
         }
       }
@@ -129,27 +135,41 @@
 
         this.clear()
 
-        this.computers[current].neighbours.forEach((neighbourId) => {
-          const result = this.search(value, neighbourId, path, [current])
-
-          if(result){
-            result.unshift(current)
-            const reversed = result.filter((item, i, array) => {
-                              return array.indexOf(item) === i
-                            })
-                            .reverse()
-
-            reversed.reduce((prev, next) => {
-              setTimeout(()=>{
-                that.computers[prev].classObject.red = false;
-                that.computers[prev].classObject.green = true;
-              }, 1000)
+        if(this.computers[current].tables[value]){
+          this.computers[current].tables[value].reduce((prev, next) => {
+            setTimeout(()=>{
+              that.computers[prev].classObject.red = false
+              that.computers[prev].classObject.green = true
               that.greenLine(prev, next)
-              return next
-            })
-          }
+            }, 1000)
+            return next
+          })
+        }else{
+          this.computers[current].neighbours.forEach((neighbourId) => {
+            const result = this.search(value, neighbourId, path, [current])
 
-        })
+            if(result){
+              result.unshift(current)
+              const unique = result.filter((item, i, array) => {
+                return array.indexOf(item) === i
+              })
+
+
+              this.computers[current].tables[value] = unique
+
+              unique.reverse().reduce((prev, next) => {
+                setTimeout(()=>{
+                  that.computers[prev].classObject.red = false
+                  that.computers[prev].classObject.green = true
+                  that.greenLine(prev, next)
+                }, 1000)
+                return next
+              })
+            }
+
+          })
+        }
+
       },
       search(value, id, previous, visited = []){
         if(visited.includes(id)) return false
