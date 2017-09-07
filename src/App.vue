@@ -2,7 +2,7 @@
   <div id="app">
     <svg width="800" height="300">
       <edge v-for="(edge, key) in edges" :x1="computers[edge.nodes[0]].x" :y1="computers[edge.nodes[0]].y" :x2="computers[edge.nodes[1]].x" :y2="computers[edge.nodes[1]].y" :classobject="edge.classObject"></edge>
-      <computer v-for="(computer, key) in computers" :key="key" :id="key" :value="computer.value" :classobject="computer.classObject" :x="computer.x" :y="computer.y"></computer>
+      <computer v-for="(computer, key) in computers" :key="key" :id="key" :value="computer.value" :class="{ selected: computer.selected }" :classobject="computer.classObject" :x="computer.x" :y="computer.y" :selectNode="selectNode"></computer>
     </svg>
     <button v-on:click="runSearch(2, 'a')">Start</button>
   </div>
@@ -20,6 +20,7 @@
     },
     data: () => {
       return {
+        selectedNode: null,
         edges: {
           '1-2': {
             nodes: [1,2],
@@ -67,7 +68,8 @@
             },
             x: 0,
             y: 0,
-            tables: {}
+            tables: {},
+            selected: false
           },
           2: {
             value: 'b',
@@ -78,7 +80,8 @@
             },
             x: 100,
             y: 0,
-            tables: {}
+            tables: {},
+            selected: false
           },
           3: {
             value: 'c',
@@ -89,7 +92,8 @@
             },
             x: 200,
             y: 0,
-            tables: {}
+            tables: {},
+            selected: false
           },
           4: {
             value: 'd',
@@ -100,7 +104,8 @@
             },
             x: 300,
             y: 0,
-            tables: {}
+            tables: {},
+            selected: false
           },
           5: {
             value: 'e',
@@ -111,7 +116,8 @@
             },
             x: 400,
             y: 0,
-            tables: {}
+            tables: {},
+            selected: false
           },
           6: {
             value: 'f',
@@ -122,7 +128,8 @@
             },
             x: 200,
             y: 100,
-            tables: {}
+            tables: {},
+            selected: false
           }
         }
       }
@@ -224,20 +231,21 @@
           this.computers[key].classObject.red = false
           this.computers[key].classObject.green = false
         }
+      },
+      selectNode(id){
+        if(this.selectedNode) this.computers[this.selectedNode].selected = false
+        if(this.selectedNode === id) return this.selectedNode = null
+        this.computers[id].selected = true
+        this.selectedNode = id
       }
     }
   }
 
 </script>
 
-<style>
+<style scoped>
   #app {
     max-width: 800px;
     margin: 60px auto 0;
-  }
-
-  .list-computers {
-    display: flex;
-    justify-content: space-between;
   }
 </style>
