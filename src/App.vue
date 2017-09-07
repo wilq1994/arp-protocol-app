@@ -4,7 +4,7 @@
       <edge v-for="(edge, key) in edges" :x1="computers[edge.nodes[0]].x" :y1="computers[edge.nodes[0]].y" :x2="computers[edge.nodes[1]].x" :y2="computers[edge.nodes[1]].y" :classobject="edge.classObject"></edge>
       <computer v-for="(computer, key) in computers" :key="key" :id="key" :value="computer.value" :classobject="computer.classObject" :x="computer.x" :y="computer.y"></computer>
     </svg>
-    <button v-on:click="runSearch(2, 'e')">Start</button>
+    <button v-on:click="runSearch(2, 'f')">Start</button>
   </div>
 </template>
 
@@ -127,6 +127,7 @@
         const current = start
         let path = [current]
 
+        this.clear()
 
         this.computers[current].neighbours.forEach((neighbourId) => {
           const result = this.search(value, neighbourId, path, [current])
@@ -192,6 +193,17 @@
         this.edges[min+'-'+max].classObject.red = false
         this.edges[min+'-'+max].classObject.green = true
         console.log(`green ${a} ${b}`)
+      },
+      clear(){
+        for(let key in this.edges){
+          this.edges[key].classObject.red = false
+          this.edges[key].classObject.green = false
+        }
+
+        for(let key in this.computers){
+          this.computers[key].classObject.red = false
+          this.computers[key].classObject.green = false
+        }
       }
     }
   }
