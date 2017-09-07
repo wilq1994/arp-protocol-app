@@ -1,22 +1,62 @@
 <template>
   <div id="app">
-    <div class="list-computers">
-      <computer v-for="(computer, key) in computers" :key="key" :id="key" :value="computer.value" :classobject="computer.classObject"></computer>
-    </div>
+    <svg width="800" height="600">
+      <edge v-for="(edge, key) in edges" :x1="computers[edge.nodes[0]].x" :y1="computers[edge.nodes[0]].y" :x2="computers[edge.nodes[1]].x" :y2="computers[edge.nodes[1]].y" :classobject="edge.classObject"></edge>
+      <computer v-for="(computer, key) in computers" :key="key" :id="key" :value="computer.value" :classobject="computer.classObject" :x="computer.x" :y="computer.y"></computer>
+    </svg>
     <button v-on:click="runSearch(2, 'e')">Start</button>
   </div>
 </template>
 
 <script>
   import Computer from './components/Computer'
+  import Edge from './components/Edge'
 
   export default {
     name: 'app',
     components: {
-      Computer
+      Computer,
+      Edge
     },
     data: () => {
       return {
+        edges: {
+          '1-2': {
+            nodes: [1,2],
+            classObject: {
+              red: false,
+              green: false
+            }
+          },
+          '2-3': {
+            nodes: [2,3],
+            classObject: {
+              red: false,
+              green: false
+            }
+          },
+          '3-4': {
+            nodes: [3,4],
+            classObject: {
+              red: false,
+              green: false
+            }
+          },
+          '4-5': {
+            nodes: [4,5],
+            classObject: {
+              red: false,
+              green: false
+            }
+          },
+          '3-6': {
+            nodes: [3,6],
+            classObject: {
+              red: false,
+              green: false
+            }
+          }
+        },
         computers: {
           1: {
             value: 'a',
@@ -24,7 +64,9 @@
             classObject: {
               red: false,
               green: false
-            }
+            },
+            x: 0,
+            y: 0
           },
           2: {
             value: 'b',
@@ -32,7 +74,9 @@
             classObject: {
               red: false,
               green: false
-            }
+            },
+            x: 100,
+            y: 0
           },
           3: {
             value: 'c',
@@ -40,7 +84,9 @@
             classObject: {
               red: false,
               green: false
-            }
+            },
+            x: 200,
+            y: 0
           },
           4: {
             value: 'd',
@@ -48,7 +94,9 @@
             classObject: {
               red: false,
               green: false
-            }
+            },
+            x: 300,
+            y: 0
           },
           5: {
             value: 'e',
@@ -56,7 +104,9 @@
             classObject: {
               red: false,
               green: false
-            }
+            },
+            x: 400,
+            y: 0
           },
           6: {
             value: 'f',
@@ -64,7 +114,9 @@
             classObject: {
               red: false,
               green: false
-            }
+            },
+            x: 200,
+            y: 100
           }
         }
       }

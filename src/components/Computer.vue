@@ -1,15 +1,11 @@
 <template>
-  <div class="computer0" :class="classobject">
-    <div class="computer__status"></div>
-    <div>Computer {{ id }}</div>
-    <div>Value {{ value }}</div>
-  </div>
+  <rect :x="x" :y="y" width="40" height="40" :class="classobject"/>
 </template>
 
 <script>
   export default {
     name: 'computer',
-    props: ['id', 'value', 'classobject'],
+    props: ['id', 'x', 'y', 'value', 'classobject'],
     data () {
       return {
       }
@@ -25,11 +21,11 @@
     border-radius: 20px;
   }
 
-  .red .computer__status {
-    background: #ff0000;
+  .red {
+    fill: #ff0000;
   }
 
-  .green .computer__status {
-    background: #00ff00;
+  .green {
+    fill: #00ff00;
   }
 </style>
