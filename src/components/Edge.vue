@@ -6,15 +6,15 @@
           :x2="x2 + 20"
           :y2="y2 + 20"
           :class="classobject"
-          data-type="edge"
-          :data-id="id"/>
+          :data-id="id"
+          :data-type="type"/>
   </g>
 </template>
 
 <script>
   export default {
     name: 'edge',
-    props: ['id', 'x1', 'y1', 'x2', 'y2', 'classobject'],
+    props: ['id', 'x1', 'y1', 'x2', 'y2', 'classobject', 'type'],
     data () {
       return {
       }

@@ -2,7 +2,8 @@
   <g>
     <text :x="x + 20"
           :y="y - 10"
-          class="text">
+          class="text"
+          data-type="stage">
           PC{{ id }}
     </text>
 
@@ -16,13 +17,15 @@
 
     <text :x="x + 20"
           :y="y + 60"
-          class="text">
+          class="text"
+          data-type="stage">
           192.168.0.1
     </text>
 
     <text :x="x + 20"
           :y="y + 80"
-          class="text">
+          class="text"
+          data-type="stage">
           E4:CD:8A:83:1D:0B
     </text>
   </g>

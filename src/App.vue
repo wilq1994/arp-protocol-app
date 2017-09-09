@@ -8,13 +8,15 @@
             :y1="computers[edge.nodes[0]].y"
             :x2="computers[edge.nodes[1]].x"
             :y2="computers[edge.nodes[1]].y"
-            :classobject="edge.classObject"/>
+            :classobject="edge.classObject"
+            type="edge"/>
 
       <edge v-if="bindedNode"
             :x1="computers[bindedNode].x"
             :y1="computers[bindedNode].y"
             :x2="mouseX - 20"
-            :y2="mouseY - 20"/>
+            :y2="mouseY - 20"
+            type="stage"/>
 
       <computer v-for="(computer, key) in computers"
                 :key="key"
