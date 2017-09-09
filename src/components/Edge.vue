@@ -1,6 +1,6 @@
 <template>
   <g>
-    <line class="line" :x1="x1 + 20" :y1="y1 + 20" :x2="x2 + 20" :y2="y2 + 20" :class="classobject"/>
+    <line class="line" :x1="x1 + 20" :y1="y1 + 20" :x2="x2 + 20" :y2="y2 + 20" :class="classobject" data-type="edge"/>
   </g>
 </template>
 

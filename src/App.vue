@@ -1,10 +1,13 @@
 <template>
   <div id="app">
-    <svg width="800" height="300">
+    <svg width="800" height="300" v-on:click="clickStage" data-type="stage">
       <edge v-for="(edge, key) in edges" :key="key" :x1="computers[edge.nodes[0]].x" :y1="computers[edge.nodes[0]].y" :x2="computers[edge.nodes[1]].x" :y2="computers[edge.nodes[1]].y" :classobject="edge.classObject"></edge>
       <computer v-for="(computer, key) in computers" :key="key" :id="key" :value="computer.value" :class="{ selected: computer.selected }" :classobject="computer.classObject" :x="computer.x" :y="computer.y" :selectNode="selectNode"></computer>
     </svg>
     <button v-on:click="runSearch(2, 'a')">Start</button>
+    <button v-on:click="setAction('ADD')" :disabled="selectedNode">Add</button>
+    <button v-on:click="setAction('DELETE')" :disabled="selectedNode">Delete</button>
+    {{ currentAction }}
     <computer-table :table="(computers[selectedNode]) ? computers[selectedNode].table : null"></computer-table>
   </div>
 </template>
@@ -24,6 +27,7 @@
     data: () => {
       return {
         selectedNode: null,
+        currentAction: null,
         edges: {
           '1-2': {
             nodes: [1,2],
@@ -248,6 +252,35 @@
         if(this.selectedNode === id) return this.selectedNode = null
         this.computers[id].selected = true
         this.selectedNode = id
+      },
+      deleteNode(id){
+        const that = this
+        this.computers[id].neighbours.forEach((computer) => {
+          const min = Math.min(id, computer)
+          const max = Math.max(id, computer)
+          this.$delete(this.edges, `${min}-${max}`)
+
+          const filtered = this.computers[computer].neighbours.filter((neighbourId) => {
+            return neighbourId != id
+          })
+          this.$set(this.computers[computer], 'neighbours', filtered)
+        })
+        this.$delete(this.computers, id)
+      },
+      setAction(action){
+        this.currentAction = (this.currentAction === action) ? null : action
+      },
+      clickStage(event){
+        const data = event.target.dataset
+        switch(data.type){
+          case 'computer':
+            if(this.currentAction === 'DELETE'){
+              this.deleteNode(data.id)
+            }else{
+              this.selectNode(data.id)
+            }
+          break
+        }
       }
     }
   }
