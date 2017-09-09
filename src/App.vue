@@ -172,8 +172,8 @@
                 return array.indexOf(item) === i
               })
 
-              this.computers[current].routes[value] = unique
-              this.computers[current].table[unique[unique.length-1]] = { ip: value, mac: unique[unique.length-1] }
+              this.$set(this.computers[current].routes, value, unique)
+              this.$set(this.computers[current].table, unique[unique.length-1], { ip: value, mac: unique[unique.length-1] })
 
               unique.reverse().reduce((prev, next) => {
                 setTimeout(()=>{
