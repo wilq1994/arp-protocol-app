@@ -1,9 +1,30 @@
 <template>
   <g>
-    <text :x="x + 20" :y="y - 10" class="text">PC{{ id }}</text>
-    <rect :x="x" :y="y" width="40" height="40" :data-id="id" data-type="computer" :class="classobject"/>
-    <text :x="x + 20" :y="y + 60" class="text">192.168.0.1</text>
-    <text :x="x + 20" :y="y + 80" class="text">E4:CD:8A:83:1D:0B</text>
+    <text :x="x + 20"
+          :y="y - 10"
+          class="text">
+          PC{{ id }}
+    </text>
+
+    <rect :x="x"
+          :y="y"
+          width="40"
+          height="40"
+          :data-id="id"
+          data-type="computer"
+          :class="classobject"/>
+
+    <text :x="x + 20"
+          :y="y + 60"
+          class="text">
+          192.168.0.1
+    </text>
+
+    <text :x="x + 20"
+          :y="y + 80"
+          class="text">
+          E4:CD:8A:83:1D:0B
+    </text>
   </g>
 </template>
 

@@ -1,12 +1,35 @@
 <template>
   <div id="app">
     <svg width="800" height="300" v-on:click="clickStage" data-type="stage">
-      <edge v-for="(edge, key) in edges" :key="key" :id="key" :x1="computers[edge.nodes[0]].x" :y1="computers[edge.nodes[0]].y" :x2="computers[edge.nodes[1]].x" :y2="computers[edge.nodes[1]].y" :classobject="edge.classObject"></edge>
-      <computer v-for="(computer, key) in computers" :key="key" :id="key" :value="computer.value" :class="{ selected: computer.selected }" :classobject="computer.classObject" :x="computer.x" :y="computer.y" :selectNode="selectNode"></computer>
+      <edge v-for="(edge, key) in edges"
+            :key="key"
+            :id="key"
+            :x1="computers[edge.nodes[0]].x"
+            :y1="computers[edge.nodes[0]].y"
+            :x2="computers[edge.nodes[1]].x"
+            :y2="computers[edge.nodes[1]].y"
+            :classobject="edge.classObject"/>
+
+      <edge v-if="bindedNode"
+            :x1="computers[bindedNode].x"
+            :y1="computers[bindedNode].y"
+            :x2="mouseX - 20"
+            :y2="mouseY - 20"/>
+
+      <computer v-for="(computer, key) in computers"
+                :key="key"
+                :id="key"
+                :value="computer.value"
+                :class="{ selected: computer.selected }"
+                :classobject="computer.classObject"
+                :x="computer.x"
+                :y="computer.y"
+                :selectNode="selectNode"/>
     </svg>
+
     <button v-on:click="runSearch(2, 'a')">Start</button>
-    <button v-on:click="setAction('ADD')" :disabled="selectedNode">Add</button>
-    <button v-on:click="setAction('DELETE')" :disabled="selectedNode">Delete</button>
+    <button v-on:click="setAction('ADD')" :disabled="selectedNode || binding">Add</button>
+    <button v-on:click="setAction('DELETE')" :disabled="selectedNode || binding">Delete</button>
     <button v-on:click="setAction('BIND')" :disabled="selectedNode">Bind</button>
     {{ currentAction }}
     <computer-table :table="(computers[selectedNode]) ? computers[selectedNode].table : null"></computer-table>
@@ -29,6 +52,10 @@
       return {
         selectedNode: null,
         currentAction: null,
+        bindedNode: null,
+        binding: false,
+        mouseX: 100,
+        mouseY: 100,
         edges: {
           '1-2': {
             nodes: [1,2],
@@ -268,6 +295,23 @@
         })
         this.$delete(this.computers, id)
       },
+      addEdge(a, b){
+        const min = Math.min(a, b)
+        const max = Math.max(a, b)
+
+        if(this.edges[`${min}-${max}`]) return false
+
+        this.computers[min].neighbours.push(max)
+        this.computers[max].neighbours.push(min)
+
+        this.$set(this.edges, `${min}-${max}`, {
+          nodes: [a, b],
+          classObject: {
+            red: false,
+            green: false
+          }
+        })
+      },
       deleteEdge(key){
         const min = key.split('-')[0]
         const max = key.split('-')[1]
@@ -287,6 +331,10 @@
       },
       setAction(action){
         this.currentAction = (this.currentAction === action) ? null : action
+        if(action === 'BIND'){
+          this.bindedNode = null
+          this.binding = !this.binding
+        }
       },
       clickStage(event){
         const data = event.target.dataset
@@ -294,6 +342,23 @@
           case 'computer':
             if(this.currentAction === 'DELETE'){
               this.deleteNode(data.id)
+            }else if(this.currentAction === 'BIND'){
+              if(this.bindedNode === data.id){
+                this.computers[this.bindedNode].selected = false
+                this.bindedNode = null
+                window.removeEventListener('mousemove', this.moveBindLine)
+              }else if(this.bindedNode){
+                this.addEdge(this.bindedNode, data.id)
+                this.computers[this.bindedNode].selected = false
+                this.bindedNode = null
+                window.removeEventListener('mousemove', this.moveBindLine)
+              }else{
+                this.bindedNode = data.id
+                this.computers[this.bindedNode].selected = true
+                this.mouseX = this.computers[this.bindedNode].x + 20
+                this.mouseY = this.computers[this.bindedNode].y + 20
+                window.addEventListener('mousemove', this.moveBindLine)
+              }
             }else{
               this.selectNode(data.id)
             }
@@ -304,9 +369,17 @@
             }
           break
           case 'stage':
-            // console.log(event)
+            if(this.bindedNode){
+              this.computers[this.bindedNode].selected = false
+              this.bindedNode = null
+              window.removeEventListener('mousemove', this.moveBindLine)
+            }
           break
         }
+      },
+      moveBindLine(event){
+        this.mouseX = event.clientX - document.getElementById('app').offsetLeft
+        this.mouseY = event.clientY - document.getElementById('app').offsetTop
       }
     }
   }
