@@ -1,12 +1,13 @@
 <template>
   <div id="app">
     <svg width="800" height="300" v-on:click="clickStage" data-type="stage">
-      <edge v-for="(edge, key) in edges" :key="key" :x1="computers[edge.nodes[0]].x" :y1="computers[edge.nodes[0]].y" :x2="computers[edge.nodes[1]].x" :y2="computers[edge.nodes[1]].y" :classobject="edge.classObject"></edge>
+      <edge v-for="(edge, key) in edges" :key="key" :id="key" :x1="computers[edge.nodes[0]].x" :y1="computers[edge.nodes[0]].y" :x2="computers[edge.nodes[1]].x" :y2="computers[edge.nodes[1]].y" :classobject="edge.classObject"></edge>
       <computer v-for="(computer, key) in computers" :key="key" :id="key" :value="computer.value" :class="{ selected: computer.selected }" :classobject="computer.classObject" :x="computer.x" :y="computer.y" :selectNode="selectNode"></computer>
     </svg>
     <button v-on:click="runSearch(2, 'a')">Start</button>
     <button v-on:click="setAction('ADD')" :disabled="selectedNode">Add</button>
     <button v-on:click="setAction('DELETE')" :disabled="selectedNode">Delete</button>
+    <button v-on:click="setAction('BIND')" :disabled="selectedNode">Bind</button>
     {{ currentAction }}
     <computer-table :table="(computers[selectedNode]) ? computers[selectedNode].table : null"></computer-table>
   </div>
@@ -200,7 +201,7 @@
         const current = [id]
         let result = false
         visited.push(id)
-        this.computers[id].classObject.red = true;
+        this.computers[id].classObject.red = true
         this.redline(previous[0], id)
 
         if(this.computers[id].value === value){
@@ -214,7 +215,7 @@
                               })
 
           for(let key in sorted){
-            var next = this.search(value, sorted[key], current, visited);
+            var next = this.search(value, sorted[key], current, visited)
             if(next){
               result = previous.concat(current.concat(next))
             }
@@ -267,6 +268,23 @@
         })
         this.$delete(this.computers, id)
       },
+      deleteEdge(key){
+        const min = key.split('-')[0]
+        const max = key.split('-')[1]
+
+        const minFiltered = this.computers[min].neighbours.filter((neighbourId) => {
+          return neighbourId != max
+        })
+
+        const maxFiltered = this.computers[max].neighbours.filter((neighbourId) => {
+          return neighbourId != min
+        })
+
+        this.$set(this.computers[min], 'neighbours', minFiltered)
+        this.$set(this.computers[max], 'neighbours', maxFiltered)
+
+        this.$delete(this.edges, key)
+      },
       setAction(action){
         this.currentAction = (this.currentAction === action) ? null : action
       },
@@ -279,6 +297,14 @@
             }else{
               this.selectNode(data.id)
             }
+          break
+          case 'edge':
+            if(this.currentAction === 'DELETE'){
+              this.deleteEdge(data.id)
+            }
+          break
+          case 'stage':
+            // console.log(event)
           break
         }
       }
