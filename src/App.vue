@@ -1,35 +1,41 @@
 <template>
   <div id="app">
-    <svg width="800" height="300" v-on:click="clickStage" data-type="stage">
-      <edge v-for="(edge, key) in edges"
-            :key="key"
-            :id="key"
-            :x1="computers[edge.nodes[0]].x"
-            :y1="computers[edge.nodes[0]].y"
-            :x2="computers[edge.nodes[1]].x"
-            :y2="computers[edge.nodes[1]].y"
-            :classobject="edge.classObject"
-            type="edge"/>
+    <div id="stage">
+      <svg width="800" height="300" v-on:click="clickStage" data-type="stage">
+        <edge v-for="(edge, key) in edges"
+              :key="key"
+              :id="key"
+              :x1="computers[edge.nodes[0]].x"
+              :y1="computers[edge.nodes[0]].y"
+              :x2="computers[edge.nodes[1]].x"
+              :y2="computers[edge.nodes[1]].y"
+              :classobject="edge.classObject"
+              type="edge"/>
 
-      <edge v-if="bindedNode"
-            :x1="computers[bindedNode].x"
-            :y1="computers[bindedNode].y"
-            :x2="mouseX - 20"
-            :y2="mouseY - 20"
-            type="stage"/>
+        <edge v-if="bindedNode"
+              :x1="computers[bindedNode].x"
+              :y1="computers[bindedNode].y"
+              :x2="mouseX - 20"
+              :y2="mouseY - 20"
+              type="stage"/>
 
-      <computer v-for="(computer, key) in computers"
-                :key="key"
-                :id="key"
-                :value="computer.value"
-                :class="{ selected: computer.selected }"
-                :classobject="computer.classObject"
-                :x="computer.x"
-                :y="computer.y"
-                :selectNode="selectNode"/>
-    </svg>
+        <computer v-for="(computer, key) in computers"
+                  :key="key"
+                  :id="key"
+                  :name="computer.name"
+                  :ip="computer.ip"
+                  :mac="computer.mac"
+                  :class="{ selected: computer.selected }"
+                  :classobject="computer.classObject"
+                  :x="computer.x"
+                  :y="computer.y"
+                  :selectNode="selectNode"/>
+      </svg>
+    </div>
 
-    <button v-on:click="runSearch(2, 'a')">Start</button>
+    <addPopup v-if="newNodePos" :id="nextComputerId" :pos="newNodePos" :addNode="addNode"/>
+
+    <button v-on:click="runSearch(2, '192.168.0.4')">Start</button>
     <button v-on:click="setAction('ADD')" :disabled="selectedNode || binding">Add</button>
     <button v-on:click="setAction('DELETE')" :disabled="selectedNode || binding">Delete</button>
     <button v-on:click="setAction('BIND')" :disabled="selectedNode">Bind</button>
@@ -42,139 +48,32 @@
   import Computer from './components/Computer'
   import Edge from './components/Edge'
   import ComputerTable from './components/ComputerTable'
+  import addPopup from './components/addPopup'
 
   export default {
     name: 'app',
     components: {
       Computer,
       Edge,
-      ComputerTable
+      ComputerTable,
+      addPopup
     },
     data: () => {
       return {
+        nextComputerId: 1,
         selectedNode: null,
         currentAction: null,
         bindedNode: null,
+        newNodePos: null,
         binding: false,
-        mouseX: 100,
-        mouseY: 100,
-        edges: {
-          '1-2': {
-            nodes: [1,2],
-            classObject: {
-              red: false,
-              green: false
-            }
-          },
-          '2-3': {
-            nodes: [2,3],
-            classObject: {
-              red: false,
-              green: false
-            }
-          },
-          '3-4': {
-            nodes: [3,4],
-            classObject: {
-              red: false,
-              green: false
-            }
-          },
-          '4-5': {
-            nodes: [4,5],
-            classObject: {
-              red: false,
-              green: false
-            }
-          },
-          '3-6': {
-            nodes: [3,6],
-            classObject: {
-              red: false,
-              green: false
-            }
-          }
+        mouseX: 0,
+        mouseY: 0,
+        offset: {
+          left: 0,
+          top: 0
         },
-        computers: {
-          1: {
-            value: 'a',
-            neighbours: [2],
-            classObject: {
-              red: false,
-              green: false
-            },
-            x: 0,
-            y: 0,
-            table: {},
-            routes: {},
-            selected: false
-          },
-          2: {
-            value: 'b',
-            neighbours: [1, 3],
-            classObject: {
-              red: false,
-              green: false
-            },
-            x: 100,
-            y: 0,
-            table: {},
-            routes: {},
-            selected: false
-          },
-          3: {
-            value: 'c',
-            neighbours: [2,4,6],
-            classObject: {
-              red: false,
-              green: false
-            },
-            x: 200,
-            y: 0,
-            table: {},
-            routes: {},
-            selected: false
-          },
-          4: {
-            value: 'd',
-            neighbours: [3,5],
-            classObject: {
-              red: false,
-              green: false
-            },
-            x: 300,
-            y: 0,
-            table: {},
-            routes: {},
-            selected: false
-          },
-          5: {
-            value: 'e',
-            neighbours: [4],
-            classObject: {
-              red: false,
-              green: false
-            },
-            x: 400,
-            y: 0,
-            table: {},
-            routes: {},
-            selected: false
-          },
-          6: {
-            value: 'f',
-            neighbours: [3],
-            classObject: {
-              red: false,
-              green: false
-            },
-            x: 200,
-            y: 100,
-            table: {},
-            routes: {},
-            selected: false
-          }
-        }
+        edges: {},
+        computers: {}
       }
     },
     methods: {
@@ -207,7 +106,7 @@
               })
 
               this.$set(this.computers[current].routes, value, unique)
-              this.$set(this.computers[current].table, unique[unique.length-1], { ip: value, mac: unique[unique.length-1] })
+              this.$set(this.computers[current].table, unique[unique.length-1], { ip: value, mac: this.computers[unique[unique.length-1]].mac })
 
               unique.reverse().reduce((prev, next) => {
                 setTimeout(()=>{
@@ -233,7 +132,7 @@
         this.computers[id].classObject.red = true
         this.redline(previous[0], id)
 
-        if(this.computers[id].value === value){
+        if(this.computers[id].ip === value){
           return current
         }else{
           const sorted = this.computers[id]
@@ -282,6 +181,25 @@
         if(this.selectedNode === id) return this.selectedNode = null
         this.computers[id].selected = true
         this.selectedNode = id
+      },
+      addNode(x, y, name, ip, mac){
+        this.newNodePos = null
+        this.$set(this.computers, this.nextComputerId, {
+          name: name,
+          ip: ip,
+          mac: mac,
+          neighbours: [],
+          classObject: {
+            red: false,
+            green: false
+          },
+          x: x - 20,
+          y: y - 20,
+          table: {},
+          routes: {},
+          selected: false
+        })
+        this.nextComputerId ++
       },
       deleteNode(id){
         const that = this
@@ -361,7 +279,7 @@
                 this.mouseY = this.computers[this.bindedNode].y + 20
                 window.addEventListener('mousemove', this.moveBindLine)
               }
-            }else{
+            }else if(!this.currentAction){
               this.selectNode(data.id)
             }
           break
@@ -371,18 +289,27 @@
             }
           break
           case 'stage':
-            if(this.bindedNode){
+            if(this.currentAction === 'BIND' && this.bindedNode){
               this.computers[this.bindedNode].selected = false
               this.bindedNode = null
               window.removeEventListener('mousemove', this.moveBindLine)
+            }else if(this.currentAction === 'ADD'){
+              this.newNodePos = {
+                x: event.clientX - this.offset.left,
+                y: event.clientY - this.offset.top
+              }
             }
           break
         }
       },
       moveBindLine(event){
-        this.mouseX = event.clientX - document.getElementById('app').offsetLeft
-        this.mouseY = event.clientY - document.getElementById('app').offsetTop
+        this.mouseX = event.clientX - this.offset.left
+        this.mouseY = event.clientY - this.offset.top
       }
+    },
+    mounted(){
+      this.offset.left = document.getElementById('stage').offsetLeft
+      this.offset.top = document.getElementById('stage').offsetTop
     }
   }
 

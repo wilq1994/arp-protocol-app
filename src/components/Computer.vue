@@ -4,7 +4,7 @@
           :y="y - 10"
           class="text"
           data-type="stage">
-          PC{{ id }}
+          {{ name }}
     </text>
 
     <rect :x="x"
@@ -19,14 +19,14 @@
           :y="y + 60"
           class="text"
           data-type="stage">
-          192.168.0.1
+          {{ ip }}
     </text>
 
     <text :x="x + 20"
           :y="y + 80"
           class="text"
           data-type="stage">
-          E4:CD:8A:83:1D:0B
+          {{ mac }}
     </text>
   </g>
 </template>
@@ -34,18 +34,11 @@
 <script>
   export default {
     name: 'computer',
-    props: ['id', 'x', 'y', 'value', 'classobject', 'selectNode']
+    props: ['id', 'x', 'y', 'name', 'ip', 'mac', 'classobject', 'selectNode']
   }
 </script>
 
 <style scoped>
-  .computer__status {
-    background: #000;
-    width: 20px;
-    height: 20px;
-    border-radius: 20px;
-  }
-
   .red {
     fill: #ff0000;
   }
