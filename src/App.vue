@@ -80,7 +80,7 @@
     methods: {
       runSearch(start, value){
         const that = this
-        const current = start
+        const current = parseInt(start)
         let path = [current]
 
         this.clear()
