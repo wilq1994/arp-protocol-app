@@ -35,10 +35,10 @@
 
     <addPopup v-if="newNodePos" :id="nextComputerId" :pos="newNodePos" :addNode="addNode"/>
 
-    <button v-on:click="runSearch(2, '192.168.0.4')">Start</button>
-    <button v-on:click="setAction('ADD')" :disabled="selectedNode || binding">Add</button>
-    <button v-on:click="setAction('DELETE')" :disabled="selectedNode || binding">Delete</button>
-    <button v-on:click="setAction('BIND')" :disabled="selectedNode">Bind</button>
+    <button v-on:click="setAction('ADD')" :disabled="selectedNode || binding || senderNode">Add</button>
+    <button v-on:click="setAction('DELETE')" :disabled="selectedNode || binding || senderNode">Delete</button>
+    <button v-on:click="setAction('BIND')" :disabled="selectedNode || senderNode">Bind</button>
+    <button v-on:click="setAction('SEND')" :disabled="selectedNode">Send ARP</button>
     {{ currentAction }}
     <computer-table :table="(computers[selectedNode]) ? computers[selectedNode].table : null"></computer-table>
   </div>
@@ -64,6 +64,7 @@
         selectedNode: null,
         currentAction: null,
         bindedNode: null,
+        senderNode: null,
         newNodePos: null,
         binding: false,
         mouseX: 0,
@@ -86,40 +87,29 @@
 
         if(!this.computers[current]) return
 
-        if(this.computers[current].routes[value]){
-          this.computers[current].routes[value].reduce((prev, next) => {
-            setTimeout(()=>{
-              that.computers[prev].classObject.red = false
-              that.computers[prev].classObject.green = true
-              that.greenLine(prev, next)
-            }, 1000)
-            return next
-          })
-        }else{
-          this.computers[current].neighbours.forEach((neighbourId) => {
-            const result = this.search(value, neighbourId, path, [current])
+        this.computers[current].neighbours.forEach((neighbourId) => {
+          const result = this.search(value, neighbourId, path, [current])
 
-            if(result){
-              result.unshift(current)
-              const unique = result.filter((item, i, array) => {
-                return array.indexOf(item) === i
-              })
+          if(result){
+            result.unshift(current)
+            const unique = result.filter((item, i, array) => {
+              return array.indexOf(item) === i
+            })
 
-              this.$set(this.computers[current].routes, value, unique)
-              this.$set(this.computers[current].table, unique[unique.length-1], { ip: value, mac: this.computers[unique[unique.length-1]].mac })
+            this.$set(this.computers[current].routes, value, unique)
+            this.$set(this.computers[current].table, unique[unique.length-1], { ip: value, mac: this.computers[unique[unique.length-1]].mac })
 
-              unique.reverse().reduce((prev, next) => {
-                setTimeout(()=>{
-                  that.computers[prev].classObject.red = false
-                  that.computers[prev].classObject.green = true
-                  that.greenLine(prev, next)
-                }, 1000)
-                return next
-              })
-            }
+            unique.reverse().reduce((prev, next) => {
+              setTimeout(()=>{
+                that.computers[prev].classObject.red = false
+                that.computers[prev].classObject.green = true
+                that.greenLine(prev, next)
+              }, 1000)
+              return next
+            })
+          }
 
-          })
-        }
+        })
 
       },
       search(value, id, previous, visited = []){
@@ -278,6 +268,18 @@
                 this.mouseX = this.computers[this.bindedNode].x + 20
                 this.mouseY = this.computers[this.bindedNode].y + 20
                 window.addEventListener('mousemove', this.moveBindLine)
+              }
+            }else if(this.currentAction === 'SEND'){
+              if(this.senderNode == data.id){
+                this.computers[this.senderNode].selected = false
+                this.senderNode = null
+              }else if(this.senderNode){
+                this.runSearch(this.senderNode, this.computers[data.id].ip)
+                this.computers[this.senderNode].selected = false
+                this.senderNode = null
+              }else{
+                this.senderNode = data.id
+                this.computers[this.senderNode].selected = true
               }
             }else if(!this.currentAction){
               this.selectNode(data.id)
