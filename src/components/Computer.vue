@@ -13,7 +13,8 @@
           height="40"
           :data-id="id"
           data-type="computer"
-          :class="classobject"/>
+          :class="classobject"
+          v-on:mousedown="drag"/>
 
     <text :x="x + 20"
           :y="y + 60"
@@ -34,7 +35,12 @@
 <script>
   export default {
     name: 'computer',
-    props: ['id', 'x', 'y', 'name', 'ip', 'mac', 'classobject', 'selectNode']
+    props: ['id', 'x', 'y', 'name', 'ip', 'mac', 'classobject', 'selectNode', 'dragComputer'],
+    methods: {
+      drag(){
+        this.dragComputer()
+      }
+    }
   }
 </script>
 

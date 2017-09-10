@@ -29,7 +29,8 @@
                   :classobject="computer.classObject"
                   :x="computer.x"
                   :y="computer.y"
-                  :selectNode="selectNode"/>
+                  :selectNode="selectNode"
+                  :dragComputer="dragComputer"/>
       </svg>
     </div>
 
@@ -307,6 +308,21 @@
       moveBindLine(event){
         this.mouseX = event.clientX - this.offset.left
         this.mouseY = event.clientY - this.offset.top
+      },
+      dragComputer(){
+        if(this.selectedNode){
+          document.querySelector('body').addEventListener('mousemove', this.moveComputer)
+          document.querySelector('body').addEventListener('mouseup', this.dropComputer)
+        }
+      },
+      moveComputer(event){
+        this.computers[this.selectedNode].x = event.clientX - this.offset.left - 20
+        this.computers[this.selectedNode].y = event.clientY - this.offset.top - 20
+      },
+      dropComputer(event){
+        console.log('drop')
+        document.querySelector('body').removeEventListener('mousemove', this.moveComputer)
+        document.querySelector('body').removeEventListener('mouseup', this.dropComputer)
       }
     },
     mounted(){
