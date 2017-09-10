@@ -38,7 +38,7 @@
     <button v-on:click="setAction('ADD')" :disabled="selectedNode || binding || senderNode">Add</button>
     <button v-on:click="setAction('DELETE')" :disabled="selectedNode || binding || senderNode">Delete</button>
     <button v-on:click="setAction('BIND')" :disabled="selectedNode || senderNode">Bind</button>
-    <button v-on:click="setAction('SEND')" :disabled="selectedNode">Send ARP</button>
+    <button v-on:click="setAction('SEND')" :disabled="selectedNode || binding">Send ARP</button>
     {{ currentAction }}
     <computer-table :table="(computers[selectedNode]) ? computers[selectedNode].table : null"></computer-table>
   </div>
