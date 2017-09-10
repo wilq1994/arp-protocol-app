@@ -1,10 +1,10 @@
 <template>
   <g>
     <line class="line"
-          :x1="x1 + 20"
-          :y1="y1 + 20"
-          :x2="x2 + 20"
-          :y2="y2 + 20"
+          :x1="x1 + 50"
+          :y1="y1 + 50"
+          :x2="x2 + 50"
+          :y2="y2 + 50"
           :class="classobject"
           :data-id="id"
           :data-type="type"/>
@@ -24,8 +24,9 @@
 
 <style scoped>
   .line {
-    stroke: #000;
+    stroke: #606060;
     stroke-width: 3;
+    transition: stroke 0.3s ease;
   }
 
   .red {

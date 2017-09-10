@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div id="stage">
-      <svg width="800" height="300" v-on:click="clickStage" data-type="stage">
+      <svg width="100%" height="100%" v-on:click="clickStage" data-type="stage" xmlns="http://www.w3.org/2000/svg" xmlns:xlink= "http://www.w3.org/1999/xlink">
         <edge v-for="(edge, key) in edges"
               :key="key"
               :id="key"
@@ -15,8 +15,8 @@
         <edge v-if="bindedNode"
               :x1="computers[bindedNode].x"
               :y1="computers[bindedNode].y"
-              :x2="mouseX - 20"
-              :y2="mouseY - 20"
+              :x2="mouseX - 50"
+              :y2="mouseY - 50"
               type="stage"/>
 
         <computer v-for="(computer, key) in computers"
@@ -34,14 +34,16 @@
       </svg>
     </div>
 
-    <addPopup v-if="newNodePos" :id="nextComputerId" :pos="newNodePos" :addNode="addNode"/>
+    <div id="sidebar">
+      <addPopup v-if="newNodePos" :id="nextComputerId" :pos="newNodePos" :addNode="addNode"/>
 
-    <button v-on:click="setAction('ADD')" :disabled="selectedNode || binding || senderNode">Add</button>
-    <button v-on:click="setAction('DELETE')" :disabled="selectedNode || binding || senderNode">Delete</button>
-    <button v-on:click="setAction('BIND')" :disabled="selectedNode || senderNode">Bind</button>
-    <button v-on:click="setAction('SEND')" :disabled="selectedNode || binding">Send ARP</button>
-    {{ currentAction }}
-    <computer-table :table="(computers[selectedNode]) ? computers[selectedNode].table : null"></computer-table>
+      <button v-on:click="setAction('ADD')" :disabled="selectedNode || binding || senderNode">Add</button>
+      <button v-on:click="setAction('DELETE')" :disabled="selectedNode || binding || senderNode">Delete</button>
+      <button v-on:click="setAction('BIND')" :disabled="selectedNode || senderNode">Bind</button>
+      <button v-on:click="setAction('SEND')" :disabled="selectedNode || binding">Send ARP</button>
+      {{ currentAction }}
+      <computer-table :table="(computers[selectedNode]) ? computers[selectedNode].table : null"></computer-table>
+    </div>
   </div>
 </template>
 
@@ -184,8 +186,8 @@
             red: false,
             green: false
           },
-          x: x - 20,
-          y: y - 20,
+          x: x - 50,
+          y: y - 50,
           table: {},
           routes: {},
           selected: false
@@ -316,8 +318,8 @@
         }
       },
       moveComputer(event){
-        this.computers[this.selectedNode].x = event.clientX - this.offset.left - 20
-        this.computers[this.selectedNode].y = event.clientY - this.offset.top - 20
+        this.computers[this.selectedNode].x = event.clientX - this.offset.left - 50
+        this.computers[this.selectedNode].y = event.clientY - this.offset.top - 50
       },
       dropComputer(event){
         console.log('drop')
@@ -333,9 +335,37 @@
 
 </script>
 
-<style scoped>
+<style>
+  html {
+    height: 100%;
+  }
+
+  body {
+    background: url('../static/bg.png') repeat;
+    height: 100%;
+    margin: 0;
+    user-select: none;
+  }
+
   #app {
-    max-width: 800px;
-    margin: 60px auto 0;
+    height: 100%;
+    margin: 0;
+    display: flex;
+  }
+
+  #stage {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  #sidebar {
+    background: #2f2f2f;
+    width: 350px;
+    flex: 0 0 350px;
+  }
+
+  svg {
+    flex: 1 1 auto;
   }
 </style>
