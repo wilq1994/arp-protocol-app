@@ -35,8 +35,6 @@
     </div>
 
     <div id="sidebar">
-      <addPopup v-if="newNodePos" :id="nextComputerId" :pos="newNodePos" :addNode="addNode"/>
-
       <button v-on:click="setAction('ADD')" :disabled="selectedNode || binding || senderNode">Add</button>
       <button v-on:click="setAction('DELETE')" :disabled="selectedNode || binding || senderNode">Delete</button>
       <button v-on:click="setAction('BIND')" :disabled="selectedNode || senderNode">Bind</button>
@@ -44,6 +42,8 @@
       {{ currentAction }}
       <computer-table :table="(computers[selectedNode]) ? computers[selectedNode].table : null"></computer-table>
     </div>
+
+    <addPopup v-if="newNodePos" :id="nextComputerId" :pos="newNodePos" :addNode="addNode" :closePopup="closeAddPopup"/>
   </div>
 </template>
 
@@ -325,6 +325,9 @@
         console.log('drop')
         document.querySelector('body').removeEventListener('mousemove', this.moveComputer)
         document.querySelector('body').removeEventListener('mouseup', this.dropComputer)
+      },
+      closeAddPopup(){
+        this.newNodePos = null
       }
     },
     mounted(){
@@ -345,6 +348,9 @@
     height: 100%;
     margin: 0;
     user-select: none;
+    font-family: 'Arial';
+    font-size: 12px;
+    color: #fff;
   }
 
   #app {
