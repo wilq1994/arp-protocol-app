@@ -18,7 +18,7 @@
 
 <script>
   export default {
-    name: 'addPopup',
+    name: 'add-popup',
     props: ['id', 'pos', 'addNode', 'closePopup'],
     data: function(){
       return {

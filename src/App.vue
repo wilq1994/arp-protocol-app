@@ -42,24 +42,16 @@
         <button v-on:click="setAction('SEND')" class="send" :class="{ active: currentAction==='SEND' }" :disabled="selectedNode || binding">Send ARP</button>
       </div>
 
-      <div>
-        <h2>Edit</h2>
-        <label>Name:</label>
-        <input type="text">
-        <br><br>
-        <label>IP:</label>
-        <input type="text">
-        <br><br>
-        <label>MAC:</label>
-        <input type="text">
-        <br><br>
-        <button>Update</button>
-      </div>
+      <edit-form v-if="selectedNode"
+                  :name="computers[selectedNode].name"
+                  :ip="computers[selectedNode].ip"
+                  :mac="computers[selectedNode].mac"
+                  :updateNode="updateNode"/>
 
       <computer-table :table="(computers[selectedNode]) ? computers[selectedNode].table : null"></computer-table>
     </div>
 
-    <AddPopup v-if="newNodePos" :id="nextComputerId" :pos="newNodePos" :addNode="addNode" :closePopup="closeAddPopup"/>
+    <add-popup v-if="newNodePos" :id="nextComputerId" :pos="newNodePos" :addNode="addNode" :closePopup="closeAddPopup"/>
   </div>
 </template>
 
@@ -68,6 +60,7 @@
   import Edge from './components/Edge'
   import ComputerTable from './components/ComputerTable'
   import AddPopup from './components/AddPopup'
+  import EditForm from './components/EditForm'
 
   export default {
     name: 'app',
@@ -75,7 +68,8 @@
       Computer,
       Edge,
       ComputerTable,
-      AddPopup
+      AddPopup,
+      EditForm
     },
     data: () => {
       return {
@@ -223,6 +217,12 @@
           this.$set(this.computers[computer], 'neighbours', filtered)
         })
         this.$delete(this.computers, id)
+      },
+      updateNode(newName, newIp){
+        this.$set(this.computers[this.selectedNode], 'name', newName)
+        this.$set(this.computers[this.selectedNode], 'ip', newIp)
+        this.$set(this.computers[this.selectedNode], 'selected', false)
+        this.selectedNode = null
       },
       addEdge(a, b){
         const min = Math.min(a, b)

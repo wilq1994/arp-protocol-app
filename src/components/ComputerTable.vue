@@ -1,18 +1,21 @@
 <template>
-  <table>
-    <thead>
-      <tr>
-        <th>Adres IP</th>
-        <th>Adres MAC</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="(item, key) in table">
-        <td>{{ item.ip }}</td>
-        <td>{{ item.mac }}</td>
-      </tr>
-    </tbody>
-  </table>
+  <div id="table">
+    <h2>ARP Table</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Adres IP</th>
+          <th>Adres MAC</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="(item, key) in table">
+          <td>{{ item.ip }}</td>
+          <td>{{ item.mac }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </template>
 
 <script>
@@ -23,6 +26,16 @@ export default {
 </script>
 
 <style scoped="">
+  #table {
+    padding: 1rem 1rem 2rem;
+  }
+
+  h2 {
+    font-size: 26px;
+    font-weight: 400;
+    margin: 0 0 1rem;
+  }
+
   table {
     border-collapse: collapse;
     border-spacing: 0;
