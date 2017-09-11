@@ -35,15 +35,31 @@
     </div>
 
     <div id="sidebar">
-      <button v-on:click="setAction('ADD')" :disabled="selectedNode || binding || senderNode">Add</button>
-      <button v-on:click="setAction('DELETE')" :disabled="selectedNode || binding || senderNode">Delete</button>
-      <button v-on:click="setAction('BIND')" :disabled="selectedNode || senderNode">Bind</button>
-      <button v-on:click="setAction('SEND')" :disabled="selectedNode || binding">Send ARP</button>
-      {{ currentAction }}
+      <div class="nav">
+        <button v-on:click="setAction('ADD')" class="add" :class="{ active: currentAction==='ADD' }" :disabled="selectedNode || binding || senderNode">Add</button>
+        <button v-on:click="setAction('DELETE')" class="delete" :class="{ active: currentAction==='DELETE' }" :disabled="selectedNode || binding || senderNode">Delete</button>
+        <button v-on:click="setAction('BIND')" class="bind" :class="{ active: currentAction==='BIND' }" :disabled="selectedNode || senderNode">Bind</button>
+        <button v-on:click="setAction('SEND')" class="send" :class="{ active: currentAction==='SEND' }" :disabled="selectedNode || binding">Send ARP</button>
+      </div>
+
+      <div>
+        <h2>Edit</h2>
+        <label>Name:</label>
+        <input type="text">
+        <br><br>
+        <label>IP:</label>
+        <input type="text">
+        <br><br>
+        <label>MAC:</label>
+        <input type="text">
+        <br><br>
+        <button>Update</button>
+      </div>
+
       <computer-table :table="(computers[selectedNode]) ? computers[selectedNode].table : null"></computer-table>
     </div>
 
-    <addPopup v-if="newNodePos" :id="nextComputerId" :pos="newNodePos" :addNode="addNode" :closePopup="closeAddPopup"/>
+    <AddPopup v-if="newNodePos" :id="nextComputerId" :pos="newNodePos" :addNode="addNode" :closePopup="closeAddPopup"/>
   </div>
 </template>
 
@@ -51,7 +67,7 @@
   import Computer from './components/Computer'
   import Edge from './components/Edge'
   import ComputerTable from './components/ComputerTable'
-  import addPopup from './components/addPopup'
+  import AddPopup from './components/AddPopup'
 
   export default {
     name: 'app',
@@ -59,7 +75,7 @@
       Computer,
       Edge,
       ComputerTable,
-      addPopup
+      AddPopup
     },
     data: () => {
       return {
@@ -246,7 +262,6 @@
         this.currentAction = (this.currentAction === action) ? null : action
         if(action === 'BIND'){
           this.bindedNode = null
-          this.binding = !this.binding
         }
       },
       clickStage(event){
@@ -369,7 +384,62 @@
     background: #2f2f2f;
     width: 350px;
     flex: 0 0 350px;
+    border-left: 1px solid #222222;
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
   }
+
+  .nav {
+    display: flex;
+    flex: 0 0 auto;
+    margin-bottom: 1rem;
+  }
+
+  .nav button {
+    color: #fff;
+    background: transparent;
+    font-family: 'Arial';
+    font-size: 12px;
+    outline: 0;
+    border: 0;
+    border-bottom: 1px solid #606060;
+    flex: 0 0 25%;
+    padding: 0.5rem;
+    cursor: pointer;
+  }
+    .nav button.active {
+      border-bottom: 1px solid #fff;
+    }
+
+    .nav button:hover:before, .nav button.active:before {
+      background-position-y: 0px;
+      opacity: 1;
+    }
+
+    .nav button[disabled="disabled"] {
+      opacity: 0.2;
+    }
+
+    .nav button:last-child {
+      border-right: 0;
+    }
+
+    .nav button:before {
+      content: '';
+      display: block;
+      background: url('../static/nav-small.png') no-repeat;
+      background-position-y: -50px;
+      width: 50px;
+      height: 50px;
+      margin: 0 auto 5px;
+      opacity: 0.5;
+    }
+
+    .nav .add:before { background-position-x: 0; }
+    .nav .delete:before { background-position-x: -50px; }
+    .nav .bind:before { background-position-x: -100px; }
+    .nav .send:before { background-position-x: -150px; }
 
   svg {
     flex: 1 1 auto;
