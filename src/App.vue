@@ -80,6 +80,7 @@
         senderNode: null,
         newNodePos: null,
         binding: false,
+        finalDelay: 0,
         mouseX: 0,
         mouseY: 0,
         offset: {
@@ -101,7 +102,7 @@
         if(!this.computers[current]) return
 
         this.computers[current].neighbours.forEach((neighbourId) => {
-          const result = this.search(value, neighbourId, path, [current])
+          const result = this.search(value, neighbourId, path, [current], 1)
 
           if(result){
             result.unshift(current)
@@ -112,12 +113,12 @@
             this.$set(this.computers[current].routes, value, unique)
             this.$set(this.computers[current].table, unique[unique.length-1], { ip: value, mac: this.computers[unique[unique.length-1]].mac })
 
-            unique.reverse().reduce((prev, next) => {
+            unique.reverse().reduce((prev, next, i) => {
               setTimeout(()=>{
                 that.computers[prev].classObject.red = false
                 that.computers[prev].classObject.green = true
                 that.greenLine(prev, next)
-              }, 1000)
+              }, this.finalDelay * 1000 + i * 1000)
               return next
             })
           }
@@ -125,17 +126,20 @@
         })
 
       },
-      search(value, id, previous, visited = []){
+      search(value, id, previous, visited = [], delay = 1){
         if(visited.includes(id)) return false
 
         const that = this
         const current = [id]
         let result = false
         visited.push(id)
-        this.computers[id].classObject.red = true
-        this.redline(previous[0], id)
+        setTimeout(() => {
+          that.computers[id].classObject.red = true
+          that.redline(previous[0], id)
+        }, delay * 1000)
 
         if(this.computers[id].ip === value){
+          this.finalDelay = delay
           return current
         }else{
           const sorted = this.computers[id]
@@ -146,7 +150,7 @@
                               })
 
           for(let key in sorted){
-            var next = this.search(value, sorted[key], current, visited)
+            var next = this.search(value, sorted[key], current, visited, delay + 1)
             if(next){
               result = previous.concat(current.concat(next))
             }
@@ -159,14 +163,12 @@
         const min = Math.min(a, b)
         const max = Math.max(a, b)
         this.edges[min+'-'+max].classObject.red = true
-        console.log(`red ${a} ${b}`)
       },
       greenLine(a, b) {
         const min = Math.min(a, b)
         const max = Math.max(a, b)
         this.edges[min+'-'+max].classObject.red = false
         this.edges[min+'-'+max].classObject.green = true
-        console.log(`green ${a} ${b}`)
       },
       clear(){
         for(let key in this.edges){
@@ -337,7 +339,6 @@
         this.computers[this.selectedNode].y = event.clientY - this.offset.top - 50
       },
       dropComputer(event){
-        console.log('drop')
         document.querySelector('body').removeEventListener('mousemove', this.moveComputer)
         document.querySelector('body').removeEventListener('mouseup', this.dropComputer)
       },
