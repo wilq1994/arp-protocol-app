@@ -10,6 +10,7 @@
               :x2="computers[edge.nodes[1]].x"
               :y2="computers[edge.nodes[1]].y"
               :classobject="edge.classObject"
+              :animation="edge.animation"
               type="edge"/>
 
         <edge v-if="bindedNode"
@@ -48,7 +49,7 @@
                   :mac="computers[selectedNode].mac"
                   :updateNode="updateNode"/>
 
-      <computer-table :table="(computers[selectedNode]) ? computers[selectedNode].table : null"></computer-table>
+      <computer-table v-if="selectedNode" :table="(computers[selectedNode]) ? computers[selectedNode].table : null"></computer-table>
     </div>
 
     <add-popup v-if="newNodePos" :id="nextComputerId" :pos="newNodePos" :addNode="addNode" :closePopup="closeAddPopup"/>
@@ -163,12 +164,32 @@
         const min = Math.min(a, b)
         const max = Math.max(a, b)
         this.edges[min+'-'+max].classObject.red = true
+        this.edges[min+'-'+max].animation = {
+          start: {
+            x: this.computers[a].x,
+            y: this.computers[a].y
+          },
+          end: {
+            x: this.computers[b].x,
+            y: this.computers[b].y
+          }
+        }
       },
       greenLine(a, b) {
         const min = Math.min(a, b)
         const max = Math.max(a, b)
         this.edges[min+'-'+max].classObject.red = false
         this.edges[min+'-'+max].classObject.green = true
+        this.edges[min+'-'+max].animation = {
+          start: {
+            x: this.computers[a].x,
+            y: this.computers[a].y
+          },
+          end: {
+            x: this.computers[b].x,
+            y: this.computers[b].y
+          }
+        }
       },
       clear(){
         for(let key in this.edges){
@@ -240,7 +261,8 @@
           classObject: {
             red: false,
             green: false
-          }
+          },
+          animation: null
         })
       },
       deleteEdge(key){
