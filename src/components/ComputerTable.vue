@@ -4,8 +4,8 @@
     <table>
       <thead>
         <tr>
-          <th>Adres IP</th>
-          <th>Adres MAC</th>
+          <th>IP</th>
+          <th>MAC</th>
         </tr>
       </thead>
       <tbody>
@@ -25,7 +25,7 @@ export default {
 }
 </script>
 
-<style scoped="">
+<style scoped>
   #table {
     padding: 1rem 1rem 2rem;
   }

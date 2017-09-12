@@ -43,6 +43,8 @@
         <button v-on:click="setAction('SEND')" class="send" :class="{ active: currentAction==='SEND' }" :disabled="selectedNode || binding">Send ARP</button>
       </div>
 
+      <message v-if="!selectedNode" :message="message" />
+
       <edit-form v-if="selectedNode"
                   :name="computers[selectedNode].name"
                   :ip="computers[selectedNode].ip"
@@ -62,6 +64,7 @@
   import ComputerTable from './components/ComputerTable'
   import AddPopup from './components/AddPopup'
   import EditForm from './components/EditForm'
+  import Message from './components/Message'
 
   export default {
     name: 'app',
@@ -70,7 +73,8 @@
       Edge,
       ComputerTable,
       AddPopup,
-      EditForm
+      EditForm,
+      Message
     },
     data: () => {
       return {
@@ -89,7 +93,11 @@
           top: 0
         },
         edges: {},
-        computers: {}
+        computers: {},
+        message: {
+          sender: null,
+          receiver: null
+        }
       }
     },
     methods: {
@@ -102,6 +110,17 @@
 
         if(!this.computers[current]) return
 
+        this.message = {
+          sender: {
+            ip: this.computers[current].ip,
+            mac: this.computers[current].mac
+          },
+          receiver: {
+            ip: value,
+            mac: '?'
+          }
+        }
+
         this.computers[current].neighbours.forEach((neighbourId) => {
           const result = this.search(value, neighbourId, path, [current], 1)
 
@@ -113,6 +132,10 @@
 
             this.$set(this.computers[current].routes, value, unique)
             this.$set(this.computers[current].table, unique[unique.length-1], { ip: value, mac: this.computers[unique[unique.length-1]].mac })
+
+            setTimeout(()=>{
+              that.message.receiver.mac = that.computers[unique[0]].mac
+            }, this.finalDelay * 1000 + 1000)
 
             unique.reverse().reduce((prev, next, i) => {
               setTimeout(()=>{
@@ -307,8 +330,8 @@
               }else{
                 this.bindedNode = data.id
                 this.computers[this.bindedNode].selected = true
-                this.mouseX = this.computers[this.bindedNode].x + 20
-                this.mouseY = this.computers[this.bindedNode].y + 20
+                this.mouseX = this.computers[this.bindedNode].x + 50
+                this.mouseY = this.computers[this.bindedNode].y + 50
                 window.addEventListener('mousemove', this.moveBindLine)
               }
             }else if(this.currentAction === 'SEND'){
